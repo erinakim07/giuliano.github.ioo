@@ -1,0 +1,72 @@
+const productos = [
+    { id: 1, nombre: 'Pelota de Basquet Molten N7', precio: 36000 },
+    { id: 2, nombre: 'Pelota de Basquet Wilson N7', precio: 39900 },
+    { id: 3, nombre: 'Pelota de Basquet x2000 Dribbling N5', precio: 14848 },
+    { id: 4, nombre: 'Zapatillas de Basquet Nike Kyrie 7 Smoke and Mirrors talles 11,12,13 US', precio: 300000 },
+    { id: 5, nombre: 'Zapatillas de Basquet Nike Kyrie 7 Concept Horus talles 13,14,15 US ', precio: 300000 },
+    { id: 6, nombre: 'Remera de Basquet LA lakers Jerry West talles L,XL,XXL', precio: 50000 }
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+    const listaProductos = document.getElementById('lista-productos');
+    const listaCarrito = document.getElementById('lista-carrito');
+    const totalElement = document.getElementById('total');
+    const vaciarCarritoBtn = document.getElementById('vaciar-carrito');
+
+    function mostrarProductos() {
+        productos.forEach(producto => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                ${producto.nombre} - $${producto.precio}
+                <button class="agregar-carrito" data-id="${producto.id}">Agregar al Carrito</button>
+            `;
+            listaProductos.appendChild(li);
+        });
+    }
+
+    function agregarAlCarrito(id) {
+        const productoSeleccionado = productos.find(producto => producto.id === id);
+
+        const li = document.createElement('li');
+        li.innerHTML = `
+            ${productoSeleccionado.nombre} - $${productoSeleccionado.precio}
+            <button class="eliminar-producto" data-id="${productoSeleccionado.id}">Eliminar</button>
+        `;
+        listaCarrito.appendChild(li);
+
+        calcularTotal();
+    }
+
+    function calcularTotal() {
+        let total = 0;
+        const productosCarrito = listaCarrito.querySelectorAll('li');
+
+        productosCarrito.forEach(producto => {
+            const precio = parseFloat(producto.textContent.split('-')[1].trim().replace('$', ''));
+            total += precio;
+        });
+
+        totalElement.textContent = total.toFixed(2);
+    }
+
+    listaProductos.addEventListener('click', e => {
+        if (e.target.classList.contains('agregar-carrito')) {
+            const id = parseInt(e.target.getAttribute('data-id'));
+            agregarAlCarrito(id);
+        }
+    });
+
+    listaCarrito.addEventListener('click', e => {
+        if (e.target.classList.contains('eliminar-producto')) {
+            e.target.parentElement.remove();
+            calcularTotal();
+        }
+    });
+
+    vaciarCarritoBtn.addEventListener('click', () => {
+        listaCarrito.innerHTML = '';
+        totalElement.textContent = '0.00';
+    });
+
+    mostrarProductos();
+});
